@@ -9,7 +9,6 @@
 
 import apt
 import collections
-import contextlib
 import os
 
 _UpgradeInfo = collections.namedtuple("_UpgradeInfo", ["labels", "count"])
@@ -90,14 +89,6 @@ def _write_reboot_required():
 def _main():
     cache = apt.cache.Cache()
 
-    # First of all, attempt to update the index. If we don't have permission
-    # to do so (or it fails for some reason), it's not the end of the world,
-    # we'll operate on the old index.
-    with contextlib.suppress(apt.cache.LockFailedException, apt.cache.FetchFailedException):
-        cache.update()
-
-    cache.open()
-    cache.upgrade(True)
     _write_pending_upgrades(cache)
     _write_held_upgrades(cache)
     _write_autoremove_pending(cache)
